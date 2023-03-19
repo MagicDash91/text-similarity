@@ -1,0 +1,166 @@
+import streamlit as st
+import seaborn as sns
+import matplotlib.pyplot as plt
+import PyPDF2
+
+import re
+# import StemmerFactory class
+from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+# create stemmer
+factory = StemmerFactory()
+stemmer = factory.create_stemmer()
+
+from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
+stop_factory = StopWordRemoverFactory()
+more_stopword = ['dengan', 'ia','bahwa','oleh','rp']
+data = stop_factory.get_stop_words()+more_stopword
+stopword = stop_factory.create_stop_word_remover()
+ 
+
+import streamlit as st
+import pandas as pd
+from io import StringIO
+
+
+
+
+# Function to read PDF and return string
+def read_pdf(file):
+    # Create a PyPDF2 reader object
+    pdf_reader = PyPDF2.PdfFileReader(file)
+
+    # Extract text from all pages of PDF
+    text = ""
+    for page in range(pdf_reader.getNumPages()):
+        text += pdf_reader.getPage(page).extractText()
+
+    # Return the text as a string
+    return text
+
+
+
+# Upload PDF file
+file = st.file_uploader("Upload a PDF file", type="pdf", key='text1')
+
+# If file is uploaded
+if file is not None:
+    # Call read_pdf function to convert PDF to string
+    text1 = read_pdf(file)
+
+
+
+# Function to read PDF and return string
+def read_pdf(file):
+    # Create a PyPDF2 reader object
+    pdf_reader = PyPDF2.PdfFileReader(file)
+
+    # Extract text from all pages of PDF
+    text = ""
+    for page in range(pdf_reader.getNumPages()):
+        text += pdf_reader.getPage(page).extractText()
+
+    # Return the text as a string
+    return text
+
+
+
+# Upload PDF file
+file = st.file_uploader("Upload a PDF file", type="pdf", key='text2')
+
+# If file is uploaded
+if file is not None:
+    # Call read_pdf function to convert PDF to string
+    text2 = read_pdf(file)
+
+
+
+
+
+if st.button("Process"):
+
+    sentence1 = text1
+    output1   = stemmer.stem(sentence1)
+
+    hasil1 = re.sub(r"\d+", "", output1)
+    hasil1 = re.sub(r'[^a-zA-Z\s]','',output1)
+
+    pattern = re.compile(r'\b(' + r'|'.join(data) + r')\b\s*')
+    hasil1 = pattern.sub('', hasil1)
+
+
+
+
+    sentence2 = text2
+    output2   = stemmer.stem(sentence2)
+
+    hasil2 = re.sub(r"\d+", "", output2)
+    hasil2 = re.sub(r'[^a-zA-Z\s]','',output2)
+
+    pattern = re.compile(r'\b(' + r'|'.join(data) + r')\b\s*')
+    hasil2 = pattern.sub('', hasil2)
+
+    documents = [hasil1, hasil2]
+    from sklearn.feature_extraction.text import CountVectorizer
+    import pandas as pd
+
+    # Create the Document Term Matrix
+    count_vectorizer = CountVectorizer(stop_words='english')
+    count_vectorizer = CountVectorizer()
+    sparse_matrix = count_vectorizer.fit_transform(documents)
+    from sklearn.metrics.pairwise import cosine_similarity
+    cosine_sim = cosine_similarity(sparse_matrix, sparse_matrix)
+
+
+    plt.rcParams.update({'font.size': 26})
+
+    heatmap = plt.figure(figsize =(10, 10))
+    sns.heatmap(cosine_sim, fmt='.2g', annot=True)
+
+
+
+
+    import matplotlib.pyplot as plt
+    from wordcloud import WordCloud
+
+    # Create a WordCloud object
+    wordcloud = WordCloud(min_font_size=3,max_words=200,width=1600,height=720,
+                       colormap = 'Set2', background_color='white').generate(hasil1)
+
+    # Display the WordCloud using Matplotlib and Streamlit
+    fig, ax = plt.subplots()
+    ax.imshow(wordcloud, interpolation='bilinear')
+    ax.axis('off')
+
+
+    # Create a WordCloud object
+    wordcloud = WordCloud(min_font_size=3,max_words=200,width=1600,height=720,
+                       colormap = 'Set2', background_color='white').generate(hasil2)
+
+    # Display the WordCloud using Matplotlib and Streamlit
+    fig2, ax = plt.subplots()
+    ax.imshow(wordcloud, interpolation='bilinear')
+    ax.axis('off')
+
+
+    str=hasil1+hasil2
+    # Create a WordCloud object
+    wordcloud = WordCloud(min_font_size=3,max_words=200,width=1600,height=720,
+                       colormap = 'Set2', background_color='white').generate(str)
+
+    # Display the WordCloud using Matplotlib and Streamlit
+    fig3, ax = plt.subplots()
+    ax.imshow(wordcloud, interpolation='bilinear')
+    ax.axis('off')
+
+
+    st.write("**Accuracy**")
+    st.write(heatmap)
+
+    st.write("**WordCloud Document 1**")
+    st.pyplot(fig)
+
+    st.write("**WordCloud Document 2**")
+    st.pyplot(fig2)
+
+    st.write("**WordCloud From Both Documents**")
+    st.pyplot(fig3)
