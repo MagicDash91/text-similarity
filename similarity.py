@@ -1,3 +1,4 @@
+%%writefile similarity.py
 import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -153,6 +154,64 @@ if st.button("Process"):
     ax.axis('off')
 
 
+
+    #bigram visualization
+    import collections
+    # Get bigrams
+    words1 = hasil1.split()
+    bigrams = list(zip(words1, words1[1:]))
+
+    # Count bigrams
+    bigram_counts = collections.Counter(bigrams)
+
+    # Get top 10 bigram counts
+    top_bigrams = dict(bigram_counts.most_common(10))
+
+    # Create bar chart
+    plt.rcParams.update({'font.size': 12})
+    fig4, ax = plt.subplots()
+    ax.bar(range(len(top_bigrams)), list(top_bigrams.values()), align='center')
+    ax.set_xticks(range(len(top_bigrams)))
+    ax.set_xticklabels(list(top_bigrams.keys()))
+    ax.set_xlabel('Bigram Words')
+    ax.set_ylabel('Count')
+    ax.set_title('Top 10 Bigram Word Counts')
+    plt.xticks(rotation=90)
+    plt.figure(figsize =(15, 15))
+    
+
+
+
+    #bigram visualization
+    import collections
+    # Get bigrams
+    words2 = hasil2.split()
+    bigrams = list(zip(words2, words2[1:]))
+
+    # Count bigrams
+    bigram_counts = collections.Counter(bigrams)
+
+    # Get top 10 bigram counts
+    top_bigrams = dict(bigram_counts.most_common(10))
+
+    # Create bar chart
+    plt.rcParams.update({'font.size': 12})
+    fig5, ax = plt.subplots()
+    ax.bar(range(len(top_bigrams)), list(top_bigrams.values()), align='center')
+    ax.set_xticks(range(len(top_bigrams)))
+    ax.set_xticklabels(list(top_bigrams.keys()))
+    ax.set_xlabel('Bigram Words')
+    ax.set_ylabel('Count')
+    ax.set_title('Top 10 Bigram Word Counts')
+    plt.xticks(rotation=90)
+    plt.figure(figsize =(15, 15))
+
+
+
+
+
+
+
     st.write("**Accuracy**")
     st.write(heatmap)
 
@@ -164,3 +223,9 @@ if st.button("Process"):
 
     st.write("**WordCloud From Both Documents**")
     st.pyplot(fig3)
+
+    st.write("**Bi-Gram for Document 1**")
+    st.pyplot(fig4)
+
+    st.write("**Bi-Gram for Document 2**")
+    st.pyplot(fig5)
