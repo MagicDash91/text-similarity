@@ -12,7 +12,7 @@ stemmer = factory.create_stemmer()
 
 from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
 stop_factory = StopWordRemoverFactory()
-more_stopword = ['dengan', 'ia','bahwa','oleh','rp']
+more_stopword = ['dengan', 'ia','bahwa','oleh','rp','undang','pasal','ayat','bab']
 data = stop_factory.get_stop_words()+more_stopword
 stopword = stop_factory.create_stop_word_remover()
  
